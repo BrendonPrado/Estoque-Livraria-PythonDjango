@@ -1,0 +1,55 @@
+{% extends 'estoque/base.html' %}
+
+{% block content %}
+
+<nav class="card nav">
+  <div class="nav-left">
+          <a class="brand" href='{% url "editora-list" %}'>Lojas</a>
+        </div>
+        <div class="card nav">
+          <form method="GET" class="nav">
+              {{ form.as_p }}
+              <button type="submit" class="button primary icon">Pesquisar</button>
+          </form>
+      </div>    
+</nav>
+
+
+<div id="autores-table">
+<table class="striped">
+  <caption>
+    <h2>Lojas cadastradas: {{ object_list | length }}</h2>
+    <a href="{% url 'loja-create' %}" class="button primary">Novo</a>
+  </caption>
+  <thead>
+    <tr>
+      <th>---</th>
+      <th>Nome</th>
+      <th>QTD de Clientes</th>
+      <th>Remover</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for obj in object_list %}
+    <tr>
+      {# contador de iterações do for #}
+      <td>{{ forloop.counter }}</td>
+      <td>
+        <a href="{% url 'loja-update' obj.pk %}">{{ obj.nome }}</a>
+      </td>
+      <td>{{ obj.quantidade_de_clientes }}</td>
+      <td>
+        <a href="{% url 'loja-delete' obj.pk %}">Remover</a>
+      </td>
+    </tr>
+    {% empty %}
+      <tr>
+        <td class="is-text-center" colspan="100%">Nenhuma Loja Cadastrada</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock content %}
+

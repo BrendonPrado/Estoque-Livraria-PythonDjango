@@ -1,0 +1,69 @@
+{% extends 'estoque/base.html' %}
+
+
+
+
+{% block content %}
+
+<nav class="card nav">
+    <div class="nav-left">
+            <a class="brand" href='{% url "livro-list" %}'>Livros</a>
+          </div>
+          <div class="card nav">
+            <form method="GET" class="nav">
+                {{ form.as_p }}
+                <button type="submit" class="button primary icon">Pesquisar</button>
+            </form>
+        </div>    
+</nav>
+
+<table class="striped">
+  <caption>
+    <h2>Livros Cadastrados: {{ object_list | length }}</h2>
+    <a href="{% url 'livro-create' %}" class="button primary">Novo</a>
+  </caption>
+  <thead>
+    <tr>
+      <th>---</th>
+      <th>Nome</th>
+      <th>Páginas</th>
+      <th>Preço</th>
+      <th>Avaliação</th>
+      <th>Autores</th>
+      <th>Editora</th>
+      <th>Data da Publicação</th>
+      <th>Remover</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for obj in object_list %}
+    <tr>
+      {# contador de iterações do for #}
+      <td>{{ forloop.counter }}</td>
+      <td>
+        <a href="{% url 'livro-update' obj.pk %}">{{ obj.nome }}</a>
+      </td>
+      <td>{{ obj.paginas }}</td>
+      <td>{{ obj.preco }}</td>
+      <td>{{ obj.avaliacao }}</td>
+      <td>
+        {% for autor in obj.autores.all %}
+          {{ autor }}
+        {% endfor %}
+      </td>
+      <td>{{ obj.editora }}</td>
+      <td>{{ obj.data_pub }}</td>
+      <td>
+        <a href="{% url 'livro-delete' obj.pk %}">Remover</a>
+      </td>
+    </tr>
+    {% empty %}
+      <tr>
+        <td class="is-text-center" colspan="100%">Nenhum Autor Cadastrado</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
+

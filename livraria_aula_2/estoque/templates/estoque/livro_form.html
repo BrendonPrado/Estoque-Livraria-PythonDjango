@@ -1,0 +1,290 @@
+{% extends 'estoque/base.html' %}
+
+{% block content %}
+  <form id="form" method="POST">
+    <h3 id="titulo">
+      {% if form.instance.pk %}
+        Atualizar: {{ form.instance.pk }}
+      {% else %}
+        Novo
+      {% endif %}
+    </h3>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>
+        {{ form.nome.errors }}
+        {{ form.nome.label_tag }}
+        {{ form.nome }}
+        <small id="nome_taken"></small>
+    </p>
+    <p>
+        {{ form.paginas.errors }}
+        {{ form.paginas.label_tag }}
+        {{ form.paginas }}
+        <small id="veri_pagina"></small>
+    </p>
+    <p>
+      {{ form.preco.errors }}
+      {{ form.preco.label_tag }}
+      {{ form.preco }}
+      <small id="veri_preco"></small>
+  </p>
+    <p>
+      {{ form.avaliacao.errors }}
+      {{ form.avaliacao.label_tag }}
+      {{ form.avaliacao }}
+      <small id="veri_avaliacao"></small>
+  </p>
+    <p>
+        {{ form.autores.errors }}
+        {{ form.autores.label_tag }}
+        {{ form.autores }}
+    </p>
+    <p>
+      {{ form.editora.errors }}
+      {{ form.editora.label_tag }}
+      {{ form.editora }}
+    </p>
+    <p>
+      {{ form.data_pub.errors }}
+      {{ form.data_pub.label_tag }}
+      {{ form.data_pub }}
+      <small id="data_pub"></small>
+  </p>
+    <button id="cadastrar" type="submit" disabled class="button primary">Submit</button>
+  </form>
+{% endblock content %}
+{% block js %}
+{% if form.instance.pk %}
+        <script type="text/javascript">
+
+          function ver_tudo(){
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "livro-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if((data.is_taken  || nome =="") && '{{ form.nome.value }}' != nome ){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_paginas").val())<=0){
+                          $('#veri_pagina').addClass('text-error');
+                          $('#veri_pagina').html('Insira um número maior que 0!');
+                          $("#cadastrar").prop("disabled",true);
+                        }else{
+                          $('#veri_pagina').html('');
+                          if(parseFloat($("#id_preco").val())<=0){
+                            $('#veri_preco').addClass('text-error');
+                            $('#veri_preco').html('Insira um preço maior que 0!');
+                            $("#cadastrar").prop("disabled",true);
+                          }else{
+                            $('#veri_preco').html('');
+                            if(parseFloat($("#id_avaliacao").val()) <=0 ){
+                              $('#veri_avaliacao').addClass('text-error');
+                              $('#veri_avaliacao').html('Entre com numero maior que 0');
+                              $("#cadastrar").prop("disabled",true);
+                            }else{
+                              $('#veri_avaliacao').html('');
+                              if($("#id_data_pub").val()==''){
+                                $('#veri_data').addClass('text-error');
+                                $('#veri_data').html('Entre com uma data');
+                              }else{
+                                $('#veri_data').html('');
+                                $("#cadastrar").prop("disabled",false);
+                              }
+                            }
+                          }
+                        }
+                    }
+                  }
+                });
+          }
+        $("html").ready(function(){
+          $("#id_data_pub").prop('type','date')
+        });
+        $("#id_nome").change(function(){
+          $.ajax({
+            url:'{% url "livro-taken" %}',
+            data:{
+                'nome':nome
+            },
+            dataType:'json',
+            success:function(data){
+                if((data.is_taken  || nome =="") && '{{ form.nome.value }}' != nome ){
+                    $('#nome_taken').addClass('text-error');
+                    $('#nome_taken').html('Nome inválido!');
+                    $("#cadastrar").prop("disabled",true);
+                }else{
+                    $('#nome_taken').html('');
+                    ver_tudo();
+              }
+          }
+        });
+      });
+
+        $("#id_paginas").change(function(){
+          if(parseInt($("#id_paginas").val())<=0){
+            $('#veri_pagina').addClass('text-error');
+            $('#veri_pagina').html('Insira um número maior que 0!');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_pagina').html('');
+            ver_tudo();
+          }
+        });
+
+        $("#id_preco").change(function(){
+          if(parseFloat($("#id_preco").val())<=0){
+            $('#veri_preco').addClass('text-error');
+            $('#veri_preco').html('Insira um preço maior que 0!');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_preco').html('');
+            ver_tudo();
+          }
+        });
+        $("#id_avaliacao").change(function(){
+          if(parseFloat($("#id_avaliacao").val()) <=0 ){
+            $('#veri_avaliacao').addClass('text-error');
+            $('#veri_avaliacao').html('Entre com numero maior que 0');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_avaliacao').html('');
+            ver_tudo();
+          }
+        });
+        $("#id_data_pub").change(function(){
+          if($("#id_data_pub").val()==''){
+            $('#veri_data').addClass('text-error');
+            $('#veri_data').html('Entre com uma data');
+          }else{
+            $('#veri_data').html('');
+            ver_tudo();
+          }
+        });
+        </script>
+
+{% else %}
+        <script type="text/javascript">
+
+          function ver_tudo(){
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "livro-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if(data.is_taken  || nome ==""){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_paginas").val())<=0){
+                          $('#veri_pagina').addClass('text-error');
+                          $('#veri_pagina').html('Insira um número maior que 0!');
+                          $("#cadastrar").prop("disabled",true);
+                        }else{
+                          $('#veri_pagina').html('');
+                          if(parseFloat($("#id_preco").val())<=0){
+                            $('#veri_preco').addClass('text-error');
+                            $('#veri_preco').html('Insira um preço maior que 0!');
+                            $("#cadastrar").prop("disabled",true);
+                          }else{
+                            $('#veri_preco').html('');
+                            if(parseFloat($("#id_avaliacao").val()) <=0 ){
+                              $('#veri_avaliacao').addClass('text-error');
+                              $('#veri_avaliacao').html('Entre com numero maior que 0');
+                              $("#cadastrar").prop("disabled",true);
+                            }else{
+                              $('#veri_avaliacao').html('');
+                              if($("#id_data_pub").val()==''){
+                                $('#veri_data').addClass('text-error');
+                                $('#veri_data').html('Entre com uma data');
+                              }else{
+                                $('#veri_data').html('');
+                                $("#cadastrar").prop("disabled",false);
+                              }
+                            }
+                          }
+                        }
+                    }
+                  }
+                });
+          }
+        $("html").ready(function(){
+          $("#id_data_pub").prop('type','date')
+        });
+
+        $("#id_nome").change(function(){
+          $.ajax({
+            url:'{% url "livro-taken" %}',
+            data:{
+                'nome':nome
+            },
+            dataType:'json',
+            success:function(data){
+                if((data.is_taken  || nome =="")){
+                    $('#nome_taken').addClass('text-error');
+                    $('#nome_taken').html('Nome inválido!');
+                    $("#cadastrar").prop("disabled",true);
+                }else{
+                    $('#nome_taken').html('');
+                    ver_tudo();
+              }
+          }
+        });
+      });
+        $("#id_paginas").change(function(){
+          if(parseInt($("#id_paginas").val())<=0){
+            $('#veri_pagina').addClass('text-error');
+            $('#veri_pagina').html('Insira um número maior que 0!');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_pagina').html('');
+            ver_tudo();
+          }
+        });
+
+        $("#id_preco").change(function(){
+          if(parseFloat($("#id_preco").val())<=0){
+            $('#veri_preco').addClass('text-error');
+            $('#veri_preco').html('Insira um preço maior que 0!');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_preco').html('');
+            ver_tudo();
+          }
+        });
+        $("#id_avaliacao").change(function(){
+          if(parseFloat($("#id_avaliacao").val()) <=0 ){
+            $('#veri_avaliacao').addClass('text-error');
+            $('#veri_avaliacao').html('Entre com numero maior que 0');
+            $("#cadastrar").prop("disabled",true);
+          }else{
+            $('#veri_avaliacao').html('');
+            ver_tudo();
+          }
+        });
+        $("#id_data_pub").change(function(){
+          if($("#id_data_pub").val()==''){
+            $('#veri_data').addClass('text-error');
+            $('#veri_data').html('Entre com uma data');
+          }else{
+            $('#veri_data').html('');
+            ver_tudo();
+          }
+        });
+        </script>
+{% endif %}
+{% endblock js %}
+
+        

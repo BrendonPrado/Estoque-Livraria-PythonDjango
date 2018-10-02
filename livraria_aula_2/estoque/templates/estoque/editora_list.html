@@ -1,0 +1,54 @@
+{% extends 'estoque/base.html' %}
+
+{% block content %}
+
+<nav class="card nav">
+    <div class="nav-left">
+            <a class="brand" href='{% url "editora-list" %}'>Editoras</a>
+          </div>
+          <div class="card nav">
+            <form method="GET" class="nav">
+                {{ form.as_p }}
+                <button type="submit" class="button primary icon">Pesquisar</button>
+            </form>
+        </div>    
+</nav>
+
+<div id="autores-table">
+<table class="striped">
+  <caption>
+    <h2>Número de Editoras cadastradas: {{ object_list | length }}</h2>
+    <a href="{% url 'editora-create' %}" class="button primary">Novo</a>
+  </caption>
+  <thead>
+    <tr>
+      <th>---</th>
+      <th>Nome</th>
+      <th>avaliação</th>
+      <th>Remover</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for obj in object_list %}
+    <tr>
+      {# contador de iterações do for #}
+      <td>{{ forloop.counter }}</td>
+      <td>
+        <a href="{% url 'editora-update' obj.pk %}">{{ obj.nome }}</a>
+      </td>
+      <td>{{ obj.avaliacao }}</td>
+      <td>
+        <a href="{% url 'editora-delete' obj.pk %}">Remover</a>
+      </td>
+    </tr>
+    {% empty %}
+      <tr>
+        <td class="is-text-center" colspan="100%">Nenhuma Editora Cadastrad</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock content %}
+

@@ -1,0 +1,159 @@
+{% extends 'estoque/base.html' %}
+
+{% block content %}
+  <form id="form" method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>
+        {{ form.nome.errors }}
+        {{ form.nome.label_tag }}
+        {{ form.nome }}
+        <small id="nome_taken"></small>
+    </p>
+    <p>
+        {{ form.quantidade_de_clientes.errors }}
+        {{ form.quantidade_de_clientes.label_tag }}
+        {{ form.quantidade_de_clientes }}
+        <small id="clientes_verifica"></small>
+    </p>
+    <button id="cadastrar" disabled type="submit" class="button primary">Cadastrar</button>
+  </form>
+{% endblock content %}
+{% block js %}
+{% if form.instance.pk %}
+    <script type="text/javascript">
+        $("#id_nome").change(function() {
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "loja-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if((data.is_taken  || nome =="") && '{{ form.nome.value }}' != nome){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_quantidade_de_clientes").val())>0){
+                            $("clientes_verifica").html('');
+                            $("#cadastrar").prop("disabled",false);
+
+                        }else{
+                            $('#clientes_verifica').html('Insira um numero positivo diferente de 0');
+                            $('#clientes_verifica').addClass('text-error');
+                            $("#cadastrar").prop("disabled",true);
+                        }
+                        }                   
+                    }
+                
+
+            });
+        });
+        
+    </script>
+    <script type="text/javascript">
+        $("#id_quantidade_de_clientes").change(function() {
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "loja-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if((data.is_taken  || nome =="") && '{{ form.nome.value }}' != nome){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_quantidade_de_clientes").val())>0){
+                            $("#clientes_verifica").html('');
+                            $("#cadastrar").prop("disabled",'');
+
+                        }else{
+                            $('#clientes_verifica').html('Insira um numero positivo maior que 0');
+                            $('#clientes_verifica').addClass('text-error');
+                            $("#cadastrar").prop("disabled",true);
+                        }
+                        }                   
+                    }
+                
+
+            });
+        });
+        
+    </script>
+{% else %}
+    <script type="text/javascript">
+        $("#id_nome").change(function() {
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "editora-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if(data.is_taken  || nome ==""){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_quantidade_de_clientes").val())>0){
+                            $("#clientes_verifica").html('');
+                            $("#cadastrar").prop("disabled",false);
+
+                        }else{
+                            $('#clientes_verifica').html('Insira um numero positivo diferente de 0');
+                            $('#avaliacao_verifica').addClass('text-error');
+                            $("#cadastrar").prop("disabled",true);
+                        }
+                        }                   
+                    }
+                
+
+            });
+        });
+        
+    </script>
+    <script type="text/javascript">
+        $("#id_quantidade_de_clientes").change(function() {
+            var nome = $("#id_nome").val();
+            $.ajax({
+                url:'{% url "editora-taken" %}',
+                data:{
+                    'nome':nome
+                },
+                dataType:'json',
+                success:function(data){
+                    if(data.is_taken  || nome ==""){
+                        $('#nome_taken').addClass('text-error');
+                        $('#nome_taken').html('Nome inválido!');
+                        $("#cadastrar").prop("disabled",true);
+                    }else{
+                        $('#nome_taken').html('');
+                        if(parseInt($("#id_quantidade_de_clientes").val())>0){
+                            $("#clientes_verifica").html('');
+                            $("#cadastrar").prop("disabled",'');
+
+                        }else{
+                            $('#clientes_verifica').html('Insira um numero positivo maior que 0');
+                            $('#clientes_verifica').addClass('text-error');
+                            $("#cadastrar").prop("disabled",true);
+                        }
+                        }                   
+                    }
+                
+
+            });
+        });
+        
+    </script>
+{% endif %}
+{% endblock js %}
+
